@@ -2,9 +2,12 @@ package com.icode.web.startup;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.hibernate.ejb.HibernatePersistence;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
@@ -24,15 +27,19 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(value = {"com.icode.service", "com.icode.dao"})
+@PropertySource("classpath:database.properties")
 public class JpaStartupConfig {
+
+    @Autowired
+    private Environment env;
 
     @Bean
     public DataSource datasource() {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/sample_test?useUnicode=true&characterEncoding=UTF-8");
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
+        dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
+        dataSource.setUrl(env.getProperty("jdbc.url"));
+        dataSource.setUsername(env.getProperty("jdbc.username"));
+        dataSource.setPassword(env.getProperty("jdbc.password"));
         return dataSource;
     }
 
